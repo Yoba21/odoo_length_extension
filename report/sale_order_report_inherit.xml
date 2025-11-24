@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document_length"
+              inherit_id="sale.report_saleorder_document">
+
+        <!-- 1️⃣ Add LENGTH column header after Quantity column -->
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th class="text-end text-nowrap">Length(Meters)</th>
+        </xpath>
+
+        <!-- 2️⃣ Add LENGTH value inside each line after quantity cell -->
+        <xpath expr="//td[@name='td_quantity']" position="after">
+            <td class="text-end">
+                <span t-field="line.length"/>
+            </td>
+        </xpath>
+
+    </template>
+</odoo>
