@@ -2,13 +2,17 @@
     'name': 'Odoo Length Extension',
     'version': '18.0.1.0',
     'author': 'Eyob',
-    'category': 'Uncategorized',
-    'description': "Length Columun in Invoice, Qoutation, and Order",
-    'license':'LGPL-3',
-    "depends": ['sale', ],
-    'data': [
-        'views/sales_order_extended_view.xml',
-        'views/account_move_extended.xml',
+    'category': 'Uncategorized', 'summary': 'Adds Length field to Sale Order Lines and Invoice Lines',
+    'description': """
+        Adds a Length column to:
+            - Sales Order lines
+            - Quotation lines
+            - Invoice lines
+                            """,
+    'license': 'LGPL-3',
+    'depends': [
+        'sale',
+        'account',
     ],
     "installable": True,
     "application": False,
