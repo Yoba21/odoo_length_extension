@@ -9,7 +9,6 @@
             <!-- Insert LENGTH after QTY block -->
             <xpath expr="//field[@name='order_line']//form//div[@name='ordered_qty']" position="after">
                 <div>
-                    <label for="length"/>
                     <field name="length"/>
                 </div>
             </xpath>
@@ -21,7 +20,7 @@
             <xpath expr="//field[@name='order_line']//kanban//main/div[@class='text-muted'][contains(.,'Quantity')]"
                    position="after">
                 <div class="text-muted">
-                    Length:
+                    Length(Meters):
                     <field name="length"/>
                 </div>
             </xpath>

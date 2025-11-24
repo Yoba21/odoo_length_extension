@@ -5,7 +5,7 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     length = fields.Float(
-        string='Length',
+        string='Length(Meters)',
         default=1.0,
         help="Multiply quantity by this length to compute effective quantity."
     )
