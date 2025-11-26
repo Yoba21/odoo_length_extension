@@ -1,4 +1,6 @@
 from odoo import api, fields, models
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class SaleOrderLine(models.Model):
@@ -64,6 +66,36 @@ class SaleOrderLine(models.Model):
         vals['length'] = self.length or 1.0
 
         return vals
+    def _prepare_procurement_values(self, group_id=False):
+        values = super()._prepare_procurement_values(group_id)
+        values.update({
+            'length': self.length,
+        })
+        return values
+
+    def _action_launch_stock_rule(self, previous_product_uom_qty=False):
+        """
+        Override the main method that creates stock moves from sale order lines.
+        This is called when the sales order is confirmed.
+        """
+        _logger.info(f"SOL {self.id}: Launching stock rule with length={self.length}")
+
+        # Call original method to create moves
+        result = super()._action_launch_stock_rule(previous_product_uom_qty)
+
+        # Ensure length is copied to all created moves
+        if self.length and self.length != 1.0:
+            # Get all moves related to this line
+            moves = self.move_ids.filtered(lambda m: m.state in ['draft', 'waiting', 'confirmed', 'assigned'])
+            if moves:
+                moves.write({'length': self.length})
+                _logger.info(f"SOL {self.id}: Updated {len(moves)} moves with length={self.length}")
+
+            for move in self.move_ids:
+                if move.length:
+                    move.move_line_ids.write({'length': move.length})
+
+        return result
 
 
 class SaleOrder(models.Model):

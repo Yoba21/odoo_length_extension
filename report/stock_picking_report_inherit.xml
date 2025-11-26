@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- 1) Add Length column to the "not done" moves table -->
+    <template id="report_delivery_document_add_length_header" inherit_id="stock.report_delivery_document">
+        <!-- Add header after Delivered column in the first table (o.state != 'done') -->
+        <xpath expr="//table[@name='stock_move_table']/thead/tr/th[@name='th_sm_quantity']" position="after">
+            <th name="th_sm_length" class="text-end">
+                <strong>Length (m)</strong>
+            </th>
+        </xpath>
+
+        <!-- Add length cell after delivered column in the first table body -->
+        <xpath expr="//table[@name='stock_move_table']/tbody/tr/td[@class='o_td_quantity text-end'][last()]"
+               position="after">
+            <td class="o_td_quantity text-end">
+                <span t-field="move.length"/>
+            </td>
+        </xpath>
+
+        <!-- Add header to the 'done' move_line table after Delivered -->
+        <xpath expr="//table[@name='stock_move_line_table']/thead/tr/th[@name='th_sml_quantity']" position="after">
+            <th name="th_sml_length" class="text-center">
+                <strong>Length (m)</strong>
+            </th>
+        </xpath>
+    </template>
+
+    <!-- 2) For serial/lot move_line rows, show move_line.length (safe) -->
+    <template id="stock_report_delivery_has_serial_move_line_add_length"
+              inherit_id="stock.stock_report_delivery_has_serial_move_line">
+        <!-- Insert after the delivered quantity cell -->
+        <xpath expr="//td[@name='move_line_lot_quantity']" position="after">
+            <td class="text-center">
+                <span t-field="move_line.length"/>
+            </td>
+        </xpath>
+    </template>
+
+    <!-- 3) For aggregated move lines (merged lines), show aggregated length if present -->
+    <template id="stock_report_delivery_aggregated_move_lines_add_length"
+              inherit_id="stock.stock_report_delivery_aggregated_move_lines">
+
+        <xpath expr="//td[@name='move_line_aggregated_quantity']" position="after">
+            <td class="text-center">
+                <!-- try to pick a representative move_line that matches the aggregated entry -->
+                <t t-set="rep"
+                   t-value="o.move_line_ids.filtered(lambda l:
+                    l.product_id.display_name == aggregated_lines[line]['name']
+                    and (aggregated_lines[line].get('description') in (None, '') or (l.move_id.description_picking or '') == aggregated_lines[line]['description'])
+                    and l.product_uom_id.id == aggregated_lines[line]['product_uom'].id)[:1]"/>
+                <t t-if="rep">
+                    <span t-field="rep[0].length"/>
+                </t>
+            </td>
+        </xpath>
+
+<!--        &lt;!&ndash; Insert a column after the aggregated delivered column &ndash;&gt;-->
+<!--        <xpath expr="//td[@name='move_line_aggregated_quantity']" position="after">-->
+<!--            <td class="text-center">-->
+<!--                &lt;!&ndash; aggregated_lines entries may or may not include 'length'. Only print if present &ndash;&gt;-->
+<!--                <t t-if="aggregated_lines[line].get('length')">-->
+<!--                    <span t-esc="aggregated_lines[line]['length']"/>-->
+<!--                </t>-->
+<!--            </td>-->
+<!--        </xpath>-->
+    </template>
+</odoo>
